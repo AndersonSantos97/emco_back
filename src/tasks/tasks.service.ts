@@ -11,14 +11,56 @@ export class TasksService {
         private tasksRepositori: Repository<TaskEntity>
     ){}
 
-    async all(): Promise<TaskEntity[]>{
-        return this.tasksRepositori.find();
+    async all(): Promise<any[]>{
+        const task = await this.tasksRepositori.find({
+            relations:['user']
+        })
+        
+        return task.map(task => ({
+            id: task.id,
+            task_description: task.task_description,
+            task_state: task.task_state,
+            user_name: task.user.user_name,
+            task_user: task.user.id
+        }))
     }
 
-    async findId(id:number): Promise<TaskEntity | undefined>{
-        return this.tasksRepositori.findOne({
-            where:{id}
+    async findId(id:number): Promise<any | undefined>{
+        const task = await this.tasksRepositori.findOne({
+            where:{id},
+            relations: ['user']
+        });
+
+        if(!task){
+            return undefined
+        }
+
+        return{
+            id: task.id,
+            task_description: task.task_description,
+            task_state: task.task_state,
+            user_name: task.user.user_name,
+            task_user: task.user.id
+        }
+    }
+
+    async findByUser(userid: number): Promise<any[]>{
+        const task = await this.tasksRepositori.find({
+            where:{user:{id: userid} },
+            relations: ['user']
         })
+
+        if(!task || task.length === 0){
+            return []
+        }
+
+        return task.map(task => ({
+            id: task.id,
+            task_description: task.task_description,
+            task_state: task.task_state,
+            user_name: task.user.user_name,
+            task_user: task.user.id
+        }))
     }
 
     async create(data: Partial<TaskEntity>): Promise<TaskEntity>{

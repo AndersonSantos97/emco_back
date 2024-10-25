@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, } from "typeorm";
+import { join } from "path";
+import { UserEntity } from "src/user/user.entity";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, } from "typeorm";
 
 @Entity('tasks')
 export class TaskEntity{
@@ -11,6 +13,10 @@ export class TaskEntity{
     @Column({type:'varchar', length:13})
     task_state: string;
 
-    @Column({type:'int'})
-    task_user: number;
+    // @Column({type:'int'})
+    // task_user: number;
+
+    @ManyToOne(() => UserEntity, user =>user.tasks)
+    @JoinColumn({name: 'task_user'})
+    user: UserEntity;
 }

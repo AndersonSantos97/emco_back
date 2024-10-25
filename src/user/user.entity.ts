@@ -1,5 +1,6 @@
 import { RoleEntity } from "src/rol/rol.entity";
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { TaskEntity } from "src/tasks/tasks.entity";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 @Entity('users')
 export class UserEntity{
     @PrimaryGeneratedColumn()
@@ -19,4 +20,7 @@ export class UserEntity{
 
     // @ManyToOne(() => RoleEntity, role =>role.id)
     // user_rol: RoleEntity;
+
+    @OneToMany(() => TaskEntity, task => task.user)
+    tasks: TaskEntity[];
 }
