@@ -2,13 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskEntity } from './tasks.entity';
+import { UserEntity } from 'src/user/user.entity';
 
 
 @Injectable()
 export class TasksService {
     constructor(
         @InjectRepository(TaskEntity)
-        private tasksRepositori: Repository<TaskEntity>
+        private tasksRepositori: Repository<TaskEntity>,
+        @InjectRepository(UserEntity)
+        private userRespo: Repository<UserEntity>
     ){}
 
     async all(): Promise<any[]>{
@@ -45,16 +48,36 @@ export class TasksService {
     }
 
     async findByUser(userid: number): Promise<any[]>{
-        const task = await this.tasksRepositori.find({
-            where:{user:{id: userid} },
-            relations: ['user']
+        
+        const user = await this.userRespo.findOne({
+            where:{id: userid}
         })
 
-        if(!task || task.length === 0){
+        if(!user){
             return []
         }
 
-        return task.map(task => ({
+        const rol = user.user_rol;
+        let tasks;
+
+        if(rol === 1){
+            tasks = await this.tasksRepositori.find({
+                relations: ['user']
+            })
+        }else if(rol === 3){
+            tasks = await this.tasksRepositori.find({
+                where:{user:{id: userid} },
+                relations: ['user']
+            })
+        }else{
+            return [];
+        }
+
+        if(!tasks || tasks.length === 0){
+            return []
+        }
+
+        return tasks.map(task => ({
             id: task.id,
             task_description: task.task_description,
             task_state: task.task_state,
@@ -65,7 +88,7 @@ export class TasksService {
 
     async create(data: Partial<TaskEntity>): Promise<TaskEntity>{
         const task = this.tasksRepositori.create(data);
-        return this.tasksRepositori.save(data);
+        return this.tasksRepositori.save(task);
         
     }
 

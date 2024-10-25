@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, 
 import { TasksService } from './tasks.service';
 import { TaskEntity } from './tasks.entity';
 import { retry } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
 @Controller('tasks')
 export class TasksController {
@@ -62,6 +63,7 @@ export class TasksController {
 
     @Get('user/:userid')
     async taskByUser(@Param('userid') userid: number){
+
         return this.tasksService.findByUser(userid);
     }
 }
