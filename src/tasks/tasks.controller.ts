@@ -18,7 +18,7 @@ export class TasksController {
 
     @Get(':id')
     async taskId(@Param('id') id: number): Promise<any>{
-        const task =  this.tasksService.all()
+        const task =  this.tasksService.findId(id); 
 
         if(!task){
             throw new NotFoundException(`No se encontro tarea con id ${id}`)
