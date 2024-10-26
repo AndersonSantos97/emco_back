@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskEntity } from './tasks.entity';
 import { UserEntity } from 'src/user/user.entity';
-import { CreateTaskDto } from './dto/create-task.dto';
+import { CreateTaskDto, UpdateTaskDto } from './dto/create-task.dto';
 
 
 @Injectable()
@@ -98,9 +98,30 @@ export class TasksService {
         
     }
 
-    async update(id: number, data: Partial<TaskEntity>): Promise<TaskEntity>{
-        await this.tasksRepositori.update(id, data)
-        return this.findId(id);
+    async update(id: number, data: UpdateTaskDto): Promise<TaskEntity>{
+        const task = await this.tasksRepositori.findOne({
+            where:{id},
+            relations:['user']
+        })
+
+        if (!task) {
+            throw new NotFoundException('Task not found');
+        }
+        
+        if(data.task_user){
+            const user = await this.userRespo.findOne({ where: { id: data.task_user } });
+            if (!user) {
+                throw new BadRequestException('User not found');
+            }
+            task.user = user;
+            delete data.task_user;
+
+        }
+        // await this.tasksRepositori.update(id, data)
+        //return this.findId(id);
+        Object.assign(task, data);
+        return this.tasksRepositori.save(task);
+        
     }
 
     async remove(id: number): Promise<void>{

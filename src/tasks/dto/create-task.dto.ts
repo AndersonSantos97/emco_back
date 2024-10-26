@@ -10,3 +10,7 @@ export class CreateTaskDto {
     @IsNotEmpty()
     task_user: number;
 }
+
+export class UpdateTaskDto extends CreateTaskDto {
+    // no se necesit mas propiedades
+}

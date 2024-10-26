@@ -4,7 +4,7 @@ import { TaskEntity } from './tasks.entity';
 import { retry } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { CreateTaskDto } from './dto/create-task.dto';
+import { CreateTaskDto, UpdateTaskDto } from './dto/create-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -35,7 +35,7 @@ export class TasksController {
     @Put(':id')
     async updateTask(
         @Param('id') id: number,
-        @Body() data: Partial<TaskEntity>
+        @Body() data: UpdateTaskDto
     ): Promise<TaskEntity>{
         const task = await this.tasksService.findId(id);
 
