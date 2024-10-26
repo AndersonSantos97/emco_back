@@ -125,6 +125,12 @@ export class TasksService {
     }
 
     async remove(id: number): Promise<void>{
+
+        const task = await this.tasksRepositori.findOne({ where: { id: id } });
+
+        if(!task){
+            throw new NotFoundException('Tarea no encontrada');
+        }
         await this.tasksRepositori.delete(id);
     }
 
