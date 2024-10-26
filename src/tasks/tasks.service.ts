@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskEntity } from './tasks.entity';
 import { UserEntity } from 'src/user/user.entity';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 
 @Injectable()
@@ -86,8 +87,13 @@ export class TasksService {
         }))
     }
 
-    async create(data: Partial<TaskEntity>): Promise<TaskEntity>{
-        const task = this.tasksRepositori.create(data);
+    async create(data: CreateTaskDto): Promise<TaskEntity>{
+        const user = await this.userRespo.findOne({where: {id: data.task_user} })
+
+        if(!user){
+            throw new BadRequestException('Usuario no encontrado');
+        }
+        const task = this.tasksRepositori.create({...data, user: user});
         return this.tasksRepositori.save(task);
         
     }

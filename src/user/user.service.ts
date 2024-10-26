@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { RoleEntity } from 'src/rol/rol.entity';
 import * as bcrypt from 'bcrypt';
+import { promises } from 'dns';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,12 @@ export class UserService {
         @InjectRepository(RoleEntity)
         private rolRepository: Repository<RoleEntity>
     ){}
+
+    async all(): Promise<UserEntity[]>{
+        const user = await this.usersRepository.find();
+
+        return user;
+    }
 
     async findUsername(username: string): Promise<UserEntity | undefined>{
         return this.usersRepository.findOne({

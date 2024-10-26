@@ -3,6 +3,8 @@ import { TasksService } from './tasks.service';
 import { TaskEntity } from './tasks.entity';
 import { retry } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -26,12 +28,8 @@ export class TasksController {
     }
 
     @Post()
-    async createTask(@Body() data: Partial<TaskEntity>): Promise<TaskEntity>{
-        if(!data.task_description || !data.task_state || !data.user){
-            throw new BadRequestException('Faltan datos')
-        }
-        
-        return this.tasksService.create(data);
+    async createTask(@Body() createTaskDto: CreateTaskDto){        
+        return this.tasksService.create(createTaskDto);
     }
 
     @Put(':id')

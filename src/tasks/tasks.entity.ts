@@ -13,8 +13,6 @@ export class TaskEntity{
     @Column({type:'varchar', length:13})
     task_state: string;
 
-    // @Column({type:'int'})
-    // task_user: number;
 
     @ManyToOne(() => UserEntity, user =>user.tasks)
     @JoinColumn({name: 'task_user'})
